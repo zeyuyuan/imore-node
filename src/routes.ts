@@ -1,11 +1,15 @@
 import Router from 'koa-router'
 import AuthController from './controllers/auth'
 
-const router = new Router()
+const unprotectedRouter = new Router()
 
-router
+unprotectedRouter
   .post('/auth/login', AuthController.login)
-  .get('/auth/user/list', AuthController.userList)
   .post('/auth/register', AuthController.register)
 
-export default router
+const protectedRouter = new Router()
+
+protectedRouter
+  .get('/auth/user/list', AuthController.userList)
+
+export { protectedRouter, unprotectedRouter }

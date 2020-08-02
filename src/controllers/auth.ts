@@ -2,6 +2,8 @@ import { Context } from 'koa'
 import { getManager } from 'typeorm'
 import { User } from '../entity/user'
 import md5 from 'md5'
+import jwt from 'jsonwebtoken'
+import { JWT_SECRET } from '../constants'
 
 export default class AuthController {
   public static async login (ctx: Context) {
@@ -22,7 +24,9 @@ export default class AuthController {
     } else if (md5(md5(ctx.request.body.password)) === user.password) {
       ctx.status = 200
       ctx.body = {
-        message: 'login success'
+        message: {
+          token: jwt.sign({ id: user.id }, JWT_SECRET)
+        }
       }
     } else {
       ctx.status = 401
@@ -45,6 +49,7 @@ export default class AuthController {
   }
 
   public static async userList (ctx: Context) {
+    console.log('token', ctx.state.user && ctx.state.user.id)
     const userRep = getManager().getRepository(User)
     const users = await userRep.find()
 

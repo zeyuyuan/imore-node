@@ -6,7 +6,6 @@ const cors = async (ctx: Context, next: Next) => {
   ctx.set('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS')
   if (ctx.method === 'OPTIONS') {
     ctx.body = 200
-    console.log('111')
   } else {
     await next()
   }
