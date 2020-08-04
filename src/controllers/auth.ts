@@ -17,10 +17,18 @@ export default class AuthController {
       .getOne()
 
     if (!user) {
-      ctx.status = 401
+      const newUser = new User()
+      newUser.username = ctx.request.body.username
+      newUser.password = md5(md5(ctx.request.body.password)) // temp bcrypt
+
+      const user = await userRep.save(newUser)
+      ctx.status = 200
       ctx.body = {
-        message: 'no account'
+        message: {
+          token: jwt.sign({ id: user.id }, JWT_SECRET)
+        }
       }
+      console.log('auto register', user.id)
     } else if (md5(md5(ctx.request.body.password)) === user.password) {
       ctx.status = 200
       ctx.body = {
@@ -28,6 +36,7 @@ export default class AuthController {
           token: jwt.sign({ id: user.id }, JWT_SECRET)
         }
       }
+      console.log('login success', user.id)
     } else {
       ctx.status = 401
       ctx.body = {
